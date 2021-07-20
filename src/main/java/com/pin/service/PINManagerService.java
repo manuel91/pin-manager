@@ -8,6 +8,7 @@ import com.pin.model.PIN;
 import com.pin.repository.MSISDNRepository;
 import com.pin.repository.PINRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -147,6 +148,14 @@ public class PINManagerService {
         }
 
         return pinResponseSet;
+    }
+
+    @Scheduled(cron = "${com.pin.service.cron.clean.pins}")
+    public void cleanExpiredPINList() {
+        List<PIN> expiredPINList = pinRepository.findByCreationDateTimeGreaterThanEqual(LocalDateTime.now());
+        if (!expiredPINList.isEmpty()) {
+            pinRepository.deleteAll(expiredPINList);
+        }
     }
 
     private MSISDNResponse convertToDTO(MSISDN msisdn) {
