@@ -163,7 +163,7 @@ public class PINManagerService {
     private PINResponse convertToDTO(PIN pin) {
         PINResponse pinResponse = new PINResponse();
         pinResponse.setPinNumber(pin.getPinNumber());
-        pinResponse.setCreationDate(pin.getCreationDate());
+        pinResponse.setCreationDateTime(pin.getCreationDateTime());
         pinResponse.setValidationAttempts(pin.getValidationAttempts());
         pinResponse.setDiscarded(pin.getDiscarded());
         pinResponse.setDiscardedDateTime(pin.getDiscardedDateTime());

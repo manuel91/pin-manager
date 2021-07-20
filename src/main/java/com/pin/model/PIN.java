@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -23,7 +22,7 @@ public class PIN {
 
     private String pinNumber;
 
-    private LocalDate creationDate = LocalDate.now();
+    private LocalDateTime creationDateTime = LocalDateTime.now();
 
     private Integer validationAttempts = 0;
 

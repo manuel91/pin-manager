@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,11 +13,11 @@ public class PINResponse {
     @JsonProperty("PIN")
     private String pinNumber;
 
-    private LocalDate creationDate = LocalDate.now();
+    private LocalDateTime creationDateTime;
 
-    private Integer validationAttempts = 0;
+    private Integer validationAttempts;
 
-    private Boolean discarded = false;
+    private Boolean discarded;
 
     private LocalDateTime discardedDateTime;
 
