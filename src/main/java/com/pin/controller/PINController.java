@@ -23,7 +23,7 @@ public class PINController {
     @Autowired
     private PINManagerService pinManagerService;
 
-    @PutMapping(path = "/create")
+    @PutMapping(path = "/pin/create")
     public ResponseEntity<String> createPIN(@RequestBody MSISDNRequest request) {
         try {
             String pinNumber = pinManagerService.createPIN(request.getPhoneNumber());
@@ -42,7 +42,7 @@ public class PINController {
         }
     }
 
-    @PutMapping(path = "/validate")
+    @PutMapping(path = "/pin/validate")
     public ResponseEntity<String> validatePIN(@RequestBody ValidatePINRequest request) {
         try {
             return pinManagerService.validatePIN(request.getPhoneNumber(), request.getPinNumber()) ?
