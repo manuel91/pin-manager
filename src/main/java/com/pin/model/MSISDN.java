@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,6 +23,6 @@ public class MSISDN {
             cascade = CascadeType.ALL,
             fetch = FetchType.EAGER
     )
-    private Set<PIN> pinSet;
+    private List<PIN> pinList;
 
 }

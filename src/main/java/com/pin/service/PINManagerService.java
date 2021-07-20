@@ -33,8 +33,8 @@ public class PINManagerService {
 
         if (msisdnQuery.isPresent()) {
             msisdn = msisdnQuery.get();
-            Set<PIN> pinSet = msisdn.getPinSet();
-            if (CollectionUtils.isEmpty(pinSet) || pinSet.size() < 3) {
+            List<PIN> pinList = msisdn.getPinList();
+            if (CollectionUtils.isEmpty(pinList) || pinList.size() < 3) {
                 // Create the new PIN for the existent MSISDN
                 newPin = generatePIN(msisdn);
             }
@@ -48,9 +48,11 @@ public class PINManagerService {
             newPin = generatePIN(msisdn);
         }
 
+        // Save changes in DB
         if (newPin != null && msisdn != null) {
-            // Save changes in DB
-            msisdnRepository.save(msisdn);
+            if (msisdn.getId() == null) {
+                msisdnRepository.save(msisdn);
+            }
             pinRepository.save(newPin);
             return newPin.getPinNumber();
         }
@@ -62,13 +64,13 @@ public class PINManagerService {
         String pinNumber;
         PIN pin = new PIN();
         Random random = new Random();
-        Set<PIN> pinSet = msisdn.getPinSet() == null ? new HashSet<>()
-                : msisdn.getPinSet().stream().filter(p -> !p.getDiscarded()).collect(Collectors.toSet());
+        List<PIN> pinList = msisdn.getPinList() == null ? new ArrayList<>()
+                : msisdn.getPinList().stream().filter(p -> !p.getDiscarded()).collect(Collectors.toList());
         do {
-            // Generate a random 4-digit PIN till is different from the ones in the given pinSet
+            // Generate a random 4-digit PIN till is different from the ones in the given pinList
             pinNumber = String.format("%04d", random.nextInt(10000));
         }
-        while (pinSet.contains(pinNumber));
+        while (pinList.contains(pinNumber));
 
         // Set new PIN number
         pin.setPinNumber(pinNumber);
@@ -85,7 +87,7 @@ public class PINManagerService {
 
         if (msisdnQuery.isPresent()) {
             MSISDN msisdn = msisdnQuery.get();
-            Optional<PIN> pinQuery = msisdn.getPinSet().stream()
+            Optional<PIN> pinQuery = msisdn.getPinList().stream()
                     .filter(p -> p.getPinNumber().equals(pinNumber) && !p.getDiscarded()).findFirst();
 
             if (pinQuery.isPresent()) {
@@ -112,47 +114,43 @@ public class PINManagerService {
         List<MSISDNResponse> msisdnResponseList = new ArrayList<>();
         List<MSISDN> msisdnList = (List<MSISDN>) msisdnRepository.findAll();
 
-        msisdnList.forEach(m -> {
-            MSISDNResponse msisdnResponse = new MSISDNResponse();
-            msisdnResponse.setPhoneNumber(m.getPhoneNumber());
-
-            Set<PINResponse> pinResponseSet = new HashSet<>();
-            m.getPinSet().forEach(p -> {
-                PINResponse pinResponse = new PINResponse();
-                pinResponse.setPinNumber(p.getPinNumber());
-                pinResponse.setCreationDate(pinResponse.getCreationDate());
-                pinResponse.setValidationAttempts(pinResponse.getValidationAttempts());
-                pinResponse.setDiscarded(p.getDiscarded());
-                pinResponse.setDiscardedDate(p.getDiscardedDate());
-                pinResponseSet.add(pinResponse);
-            });
-
-            msisdnResponse.setPinSet(pinResponseSet);
-            msisdnResponseList.add(msisdnResponse);
-        });
+        msisdnList.forEach(m -> msisdnResponseList.add(convertToDTO(m)));
 
         return msisdnResponseList;
     }
 
-    public Set<PINResponse> getPINSet(String phoneNumber) {
-        Set<PINResponse> pinResponseSet = new HashSet<>();
+    public List<PINResponse> getPINList(String phoneNumber) {
+        List<PINResponse> pinResponseSet = new ArrayList<>();
         Optional<MSISDN> msisdnQuery = msisdnRepository.findByPhoneNumber(phoneNumber);
 
         if (msisdnQuery.isPresent()) {
             MSISDN msisdn = msisdnQuery.get();
-            msisdn.getPinSet().forEach(p -> {
-                PINResponse pinResponse = new PINResponse();
-                pinResponse.setPinNumber(p.getPinNumber());
-                pinResponse.setCreationDate(pinResponse.getCreationDate());
-                pinResponse.setValidationAttempts(pinResponse.getValidationAttempts());
-                pinResponse.setDiscarded(p.getDiscarded());
-                pinResponse.setDiscardedDate(p.getDiscardedDate());
-                pinResponseSet.add(pinResponse);
-            });
+            msisdn.getPinList().forEach(p -> pinResponseSet.add(convertToDTO(p)));
         }
 
         return pinResponseSet;
     }
 
+    private MSISDNResponse convertToDTO(MSISDN msisdn) {
+        MSISDNResponse msisdnResponse = new MSISDNResponse();
+        msisdnResponse.setPhoneNumber(msisdn.getPhoneNumber());
+
+        List<PINResponse> pinResponseList = new ArrayList<>();
+        msisdn.getPinList().forEach(p -> pinResponseList.add(convertToDTO(p)));
+        msisdnResponse.setPinList(pinResponseList);
+
+        return msisdnResponse;
+    }
+
+    private PINResponse convertToDTO(PIN pin) {
+        PINResponse pinResponse = new PINResponse();
+        pinResponse.setPinNumber(pin.getPinNumber());
+        pinResponse.setCreationDate(pin.getCreationDate());
+        pinResponse.setValidationAttempts(pin.getValidationAttempts());
+        pinResponse.setDiscarded(pin.getDiscarded());
+        pinResponse.setDiscardedDate(pin.getDiscardedDate());
+
+        return pinResponse;
+    }
 
 }

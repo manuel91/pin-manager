@@ -11,10 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.ArrayList;
 
 @Slf4j
 @RestController
@@ -38,7 +36,7 @@ public class PINController {
         }
     }
 
-    @GetMapping(path = "/validate")
+    @PutMapping(path = "/validate")
     public ResponseEntity<String> validatePIN(@RequestBody ValidatePINRequest request) {
         try {
             return pinManagerService.validatePIN(request.getPhoneNumber(), request.getPinNumber()) ?
@@ -68,14 +66,13 @@ public class PINController {
     }
 
     @GetMapping(path = "/pins")
-    public ResponseEntity<Set<PINResponse>> getPINSet(MSISDNRequest msisdnRequest) {
-        Set<PINResponse> pinResponseSet = new HashSet<>();
+    public ResponseEntity<List<PINResponse>> getPINList(MSISDNRequest msisdnRequest) {
+        List<PINResponse> pinResponseList = new ArrayList<>();
 
         try {
-
-            pinResponseSet = pinManagerService.getPINSet(msisdnRequest.getPhoneNumber());
-            return !pinResponseSet.isEmpty() ?
-                    new ResponseEntity<>(pinResponseSet, HttpStatus.OK) :
+            pinResponseList = pinManagerService.getPINList(msisdnRequest.getPhoneNumber());
+            return !pinResponseList.isEmpty() ?
+                    new ResponseEntity<>(pinResponseList, HttpStatus.OK) :
                     new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         catch(Exception e) {
