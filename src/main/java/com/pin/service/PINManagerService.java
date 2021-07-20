@@ -113,7 +113,6 @@ public class PINManagerService {
     public List<MSISDNResponse> getAllMSISDN() {
         List<MSISDNResponse> msisdnResponseList = new ArrayList<>();
         List<MSISDN> msisdnList = (List<MSISDN>) msisdnRepository.findAll();
-
         msisdnList.forEach(m -> msisdnResponseList.add(convertToDTO(m)));
 
         return msisdnResponseList;
