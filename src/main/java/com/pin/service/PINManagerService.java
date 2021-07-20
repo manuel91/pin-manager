@@ -152,7 +152,7 @@ public class PINManagerService {
 
     @Scheduled(cron = "${com.pin.service.cron.clean.pins}")
     public void cleanExpiredPINList() {
-        List<PIN> expiredPINList = pinRepository.findByCreationDateTimeGreaterThanEqual(LocalDateTime.now());
+        List<PIN> expiredPINList = pinRepository.findByCreationDateTimeGreaterThanEqualAndDiscardedFalse(LocalDateTime.now());
         if (!expiredPINList.isEmpty()) {
             pinRepository.deleteAll(expiredPINList);
         }
