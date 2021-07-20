@@ -4,15 +4,16 @@ import com.pin.dto.MSISDNRequest;
 import com.pin.dto.MSISDNResponse;
 import com.pin.dto.PINResponse;
 import com.pin.dto.ValidatePINRequest;
+import com.pin.exception.InvalidInputException;
 import com.pin.service.PINManagerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.ArrayList;
 
 @Slf4j
 @RestController
@@ -30,6 +31,11 @@ public class PINController {
                     new ResponseEntity<>(pinNumber, HttpStatus.CREATED) :
                     new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+        catch(InvalidInputException e) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Error-Message", e.getMessage());
+            return new ResponseEntity<>(headers, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         catch(Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -43,6 +49,11 @@ public class PINController {
                     new ResponseEntity<>(HttpStatus.OK) :
                     new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        catch(InvalidInputException e) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Error-Message", e.getMessage());
+            return new ResponseEntity<>(headers, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         catch(Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -51,13 +62,8 @@ public class PINController {
 
     @GetMapping(path = "/msisdn/all")
     public ResponseEntity<List<MSISDNResponse>> getAllMSISDN() {
-        List<MSISDNResponse> msisdnResponseList = new ArrayList<>();
-
         try {
-            msisdnResponseList = pinManagerService.getAllMSISDN();
-            return !msisdnResponseList.isEmpty() ?
-                    new ResponseEntity<>(msisdnResponseList, HttpStatus.OK) :
-                    new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(pinManagerService.getAllMSISDN(), HttpStatus.OK);
         }
         catch(Exception e) {
             log.error(e.getMessage());
@@ -65,15 +71,15 @@ public class PINController {
         }
     }
 
-    @GetMapping(path = "/pins")
-    public ResponseEntity<List<PINResponse>> getPINList(MSISDNRequest msisdnRequest) {
-        List<PINResponse> pinResponseList = new ArrayList<>();
-
+    @GetMapping(path = "/msisdn/pins")
+    public ResponseEntity<List<PINResponse>> getPINList(@RequestBody MSISDNRequest msisdnRequest) {
         try {
-            pinResponseList = pinManagerService.getPINList(msisdnRequest.getPhoneNumber());
-            return !pinResponseList.isEmpty() ?
-                    new ResponseEntity<>(pinResponseList, HttpStatus.OK) :
-                    new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(pinManagerService.getPINList(msisdnRequest.getPhoneNumber()), HttpStatus.OK);
+        }
+        catch(InvalidInputException e) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Error-Message", e.getMessage());
+            return new ResponseEntity<>(headers, HttpStatus.UNPROCESSABLE_ENTITY);
         }
         catch(Exception e) {
             log.error(e.getMessage());

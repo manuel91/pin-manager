@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -28,6 +29,6 @@ public class PIN {
 
     private Boolean discarded = false;
 
-    private LocalDate discardedDate;
+    private LocalDateTime discardedDateTime;
 
 }
