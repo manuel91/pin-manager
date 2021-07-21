@@ -13,9 +13,11 @@ import java.util.List;
 public class MSISDN {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     @OneToMany(
