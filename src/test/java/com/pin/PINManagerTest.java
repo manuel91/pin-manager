@@ -7,6 +7,7 @@ import com.pin.repository.PINRepository;
 import com.pin.service.PINManagerService;
 
 import com.pin.utils.PINManagerTestUtils;
+import com.pin.utils.PINManagerUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -36,7 +37,7 @@ public class PINManagerTest extends BaseUnitTest {
     @Test
     public void createPINTest1() throws Exception {
         Mockito.when(msisdnRepository.findByPhoneNumber(ArgumentMatchers.anyString())).thenReturn(Optional.empty());
-        Assert.assertTrue(PINManagerTestUtils.isValidPINFormat(pinManagerService.createPIN(PINManagerTestUtils.CUSTOM_PHONE_NUMBER)));
+        Assert.assertTrue(PINManagerUtils.PIN_FORMAT_PATTERN.matcher(pinManagerService.createPIN(PINManagerTestUtils.CUSTOM_PHONE_NUMBER)).matches());
     }
 
     @Test

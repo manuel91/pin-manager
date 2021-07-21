@@ -8,6 +8,7 @@ import com.pin.model.PIN;
 import com.pin.repository.MSISDNRepository;
 import com.pin.repository.PINRepository;
 import com.pin.utils.PINManagerTestUtils;
+import com.pin.utils.PINManagerUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,7 +69,7 @@ public class PINManagerIntegrationTest {
                 .andExpect(status().isCreated())
                 .andReturn();
 
-        Assert.assertTrue(PINManagerTestUtils.isValidPINFormat(result.getResponse().getContentAsString()));
+        Assert.assertTrue(PINManagerUtils.PIN_FORMAT_PATTERN.matcher(result.getResponse().getContentAsString()).matches());
     }
 
     @Test
@@ -104,7 +105,7 @@ public class PINManagerIntegrationTest {
 
                 // Get result and validate its format
                 String pinNumber = result.getResponse().getContentAsString();
-                Assert.assertTrue(PINManagerTestUtils.isValidPINFormat(result.getResponse().getContentAsString()));
+                Assert.assertTrue(PINManagerUtils.PIN_FORMAT_PATTERN.matcher(result.getResponse().getContentAsString()).matches());
 
                 // If correct, then create PIN object to update MSISDN mock query
                 PIN pin = PINManagerTestUtils.getPINSample(msisdn, pinNumber);

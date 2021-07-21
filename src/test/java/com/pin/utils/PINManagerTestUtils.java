@@ -7,11 +7,7 @@ import com.pin.dto.ValidatePINRequest;
 import com.pin.model.MSISDN;
 import com.pin.model.PIN;
 
-import java.util.regex.Pattern;
-
 public class PINManagerTestUtils {
-
-    private static final Pattern PIN_FORMAT_PATTERN = Pattern.compile("[0-9]{4}");
 
     public static final String CREATE_PIN_SERVICE_PATH = "/pin-service/pin/create";
 
@@ -53,10 +49,6 @@ public class PINManagerTestUtils {
         PIN pin = getPINSample(msisdn);
         pin.setPinNumber(pinNumber);
         return pin;
-    }
-
-    public static boolean isValidPINFormat(String pinNumber) {
-        return PIN_FORMAT_PATTERN.matcher(pinNumber).matches();
     }
 
     public static String asJsonString(final Object obj) {

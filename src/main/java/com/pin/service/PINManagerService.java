@@ -7,13 +7,13 @@ import com.pin.model.MSISDN;
 import com.pin.model.PIN;
 import com.pin.repository.MSISDNRepository;
 import com.pin.repository.PINRepository;
+import com.pin.utils.PINManagerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,12 +25,8 @@ public class PINManagerService {
     @Autowired
     private PINRepository pinRepository;
 
-    private static final Pattern MSISDN_FORMAT_PATTERN = Pattern.compile("\\+[0-9]{11,12}");
-
-    private static final Pattern PIN_FORMAT_PATTERN = Pattern.compile("[0-9]{4}");
-
     public String createPIN(String phoneNumber) throws InvalidInputException{
-        if (phoneNumber == null || !MSISDN_FORMAT_PATTERN.matcher(phoneNumber).matches()) {
+        if (phoneNumber == null || !PINManagerUtils.MSISDN_FORMAT_PATTERN.matcher(phoneNumber).matches()) {
             throw new InvalidInputException(String.format("Invalid format for MSISDN = '%s', the expected input must start by '+' followed by 11 or 12 digits (Ex. +34999112233)", phoneNumber));
         }
 
@@ -45,7 +41,7 @@ public class PINManagerService {
 
             if (pinList.size() < 3) {
                 // Create the new PIN for the existent MSISDN
-                newPin = generatePIN(msisdn);
+                newPin = PINManagerUtils.generatePIN(msisdn);
             }
         }
         else {
@@ -54,7 +50,7 @@ public class PINManagerService {
             msisdn.setPhoneNumber(phoneNumber);
 
             // Create a new PIN for the new MSISDN
-            newPin = generatePIN(msisdn);
+            newPin = PINManagerUtils.generatePIN(msisdn);
         }
 
         // Save changes in DB
@@ -69,32 +65,12 @@ public class PINManagerService {
         return null;
     }
 
-    private PIN generatePIN(MSISDN msisdn) {
-        String pinNumber;
-        PIN pin = new PIN();
-        Random random = new Random();
-        List<PIN> pinList = msisdn.getPinList() == null ? new ArrayList<>()
-                : msisdn.getPinList().stream().filter(p -> !p.getDiscarded()).collect(Collectors.toList());
-
-        do {
-            // Generate a random 4-digit PIN till is different from the ones in the given pinList
-            pinNumber = String.format("%04d", random.nextInt(10000));
-        }
-        while (pinList.contains(pinNumber));
-
-        // Set new PIN number
-        pin.setPinNumber(pinNumber);
-        pin.setMsisdn(msisdn);
-
-        return pin;
-    }
-
     public boolean validatePIN(String phoneNumber, String pinNumber) throws InvalidInputException {
-        if (phoneNumber == null || !MSISDN_FORMAT_PATTERN.matcher(phoneNumber).matches()) {
+        if (phoneNumber == null || !PINManagerUtils.MSISDN_FORMAT_PATTERN.matcher(phoneNumber).matches()) {
             throw new InvalidInputException(String.format("Invalid format for MSISDN = '%s', the expected input must start by '+' followed by 11 or 12 digits (Ex. +34999112233)", phoneNumber));
         }
 
-        if (pinNumber == null || !PIN_FORMAT_PATTERN.matcher(pinNumber).matches()) {
+        if (pinNumber == null || !PINManagerUtils.PIN_FORMAT_PATTERN.matcher(pinNumber).matches()) {
             throw new InvalidInputException(String.format("Invalid format for PIN = '%s', the expected input must be a 4 digit numeric combination", pinNumber));
         }
 
@@ -129,13 +105,13 @@ public class PINManagerService {
     public List<MSISDNResponse> getAllMSISDN() {
         List<MSISDNResponse> msisdnResponseList = new ArrayList<>();
         List<MSISDN> msisdnList = (List<MSISDN>) msisdnRepository.findAll();
-        msisdnList.forEach(m -> msisdnResponseList.add(convertToDTO(m)));
+        msisdnList.forEach(m -> msisdnResponseList.add(PINManagerUtils.convertToDTO(m)));
 
         return msisdnResponseList;
     }
 
     public List<PINResponse> getPINList(String phoneNumber) throws InvalidInputException {
-        if (phoneNumber == null || !MSISDN_FORMAT_PATTERN.matcher(phoneNumber).matches()) {
+        if (phoneNumber == null || !PINManagerUtils.MSISDN_FORMAT_PATTERN.matcher(phoneNumber).matches()) {
             throw new InvalidInputException(String.format("Invalid format for MSISDN = '%s', the expected input must start by '+' followed by 11 or 12 digits (Ex. +34999112233)", phoneNumber));
         }
 
@@ -144,7 +120,7 @@ public class PINManagerService {
 
         if (msisdnQuery.isPresent()) {
             MSISDN msisdn = msisdnQuery.get();
-            msisdn.getPinList().forEach(p -> pinResponseSet.add(convertToDTO(p)));
+            msisdn.getPinList().forEach(p -> pinResponseSet.add(PINManagerUtils.convertToDTO(p)));
         }
 
         return pinResponseSet;
@@ -156,28 +132,6 @@ public class PINManagerService {
         if (!expiredPINList.isEmpty()) {
             pinRepository.deleteAll(expiredPINList);
         }
-    }
-
-    private MSISDNResponse convertToDTO(MSISDN msisdn) {
-        MSISDNResponse msisdnResponse = new MSISDNResponse();
-        msisdnResponse.setPhoneNumber(msisdn.getPhoneNumber());
-
-        List<PINResponse> pinResponseList = new ArrayList<>();
-        msisdn.getPinList().forEach(p -> pinResponseList.add(convertToDTO(p)));
-        msisdnResponse.setPinList(pinResponseList);
-
-        return msisdnResponse;
-    }
-
-    private PINResponse convertToDTO(PIN pin) {
-        PINResponse pinResponse = new PINResponse();
-        pinResponse.setPinNumber(pin.getPinNumber());
-        pinResponse.setCreationDateTime(pin.getCreationDateTime());
-        pinResponse.setValidationAttempts(pin.getValidationAttempts());
-        pinResponse.setDiscarded(pin.getDiscarded());
-        pinResponse.setDiscardedDateTime(pin.getDiscardedDateTime());
-
-        return pinResponse;
     }
 
 }
