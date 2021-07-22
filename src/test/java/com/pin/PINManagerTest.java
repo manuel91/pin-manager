@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -35,8 +34,6 @@ public class PINManagerTest extends BaseUnitTest {
 
     @InjectMocks
     private PINManagerService pinManagerService;
-
-    private static final Pattern PIN_FORMAT_PATTERN = Pattern.compile("[0-9]{4}");
 
     @Test
     public void createPINTest1() throws Exception {
@@ -60,7 +57,7 @@ public class PINManagerTest extends BaseUnitTest {
 
                 // Get result and validate its format
                 String pinNumber = pinManagerService.createPIN(PINManagerTestUtils.CUSTOM_PHONE_NUMBER);
-                Assert.assertTrue(PIN_FORMAT_PATTERN.matcher(pinNumber).matches());
+                Assert.assertTrue(PINManagerUtils.PIN_FORMAT_PATTERN.matcher(pinNumber).matches());
 
                 // If correct, then create PIN object to update MSISDN mock query
                 PIN pin = PINManagerTestUtils.getPINSample(msisdn, pinNumber);
