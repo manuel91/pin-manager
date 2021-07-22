@@ -68,3 +68,21 @@ This endpoint will receive a phone number along with a pin number (MSISDN) to va
     "PIN": "1234"
 }
 ```
+
+**Get PIN list for MSISDN**
+
+This endpoint will fetch and retrieve all PINs associated to a phone number (MSISDN).
+* **GET**: http://localhost:8080/pin-manager/msisdn/pins
+```bash
+{
+    "MSISDN":"+34999112233"
+}
+```
+
+**Get all MSISDN with PIN list**
+This endpoint will fetch and retrieve all MSISDN created with their respective associated PINs.
+* **GET**: http://localhost:8080/pin-manager/msisdn/all
+
+**Clean expired PINs**
+An alternative method that manually calls the CRON function to delete expired PINs after 1 hour of their creation-
+* **DELETE**: http://localhost:8080/pin-manager/pin/expired
