@@ -25,6 +25,12 @@ Bonus
 
 ## Setup and Execution
 
+The minimum requirements to run the project are listed below:
+    - Java 11
+    - Apache Maven
+    - Docker
+    - Docker Compose
+
 In order to compile and run this service by console, the commands to be executed on the project's folder are:
 
 * Clean and Install the project by using Maven:
