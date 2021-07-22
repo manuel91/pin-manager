@@ -108,7 +108,7 @@ public class PINManagerTest extends BaseUnitTest {
         pin.setCreationDateTime(pin.getCreationDateTime().minusHours(1));
         msisdn.setPinList(Arrays.asList(pin));
 
-        // Set Mock result for MSISDN query
+        // Set Mock result for PIN query
         Mockito.when(pinRepository.findByCreationDateTimeLessThanEqualAndDiscardedFalse(ArgumentMatchers.any(LocalDateTime.class))).thenReturn(msisdn.getPinList());
 
         // Verify execution of delete method
