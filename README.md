@@ -35,7 +35,7 @@ In order to compile and run this service by console, the commands to be executed
 
 * Clean and Install the project by using Maven:
 ```bash
-$ mvn clean install
+$ mvn clean package
 ```
 * Run the service with docker by executing the command:
 ```bash
@@ -44,4 +44,27 @@ $ docker-compose up --build
 * In order to shutdown docker-compose execution, use the following command:
 ```bash
 $ docker-compose down
+```
+
+## Endpoints
+
+**Create PIN for MSISDN**
+
+This endpoint will receive a phone number (MSISDN) in order to generate and retrieve a random 4-digit PIN to then be stored into database.
+* **PUT**: http://localhost:8080/pin-manager/pin/create
+```bash
+{
+    "MSISDN":"+34999112233",
+}
+```
+
+**Validate PIN**
+
+This endpoint will receive a phone number along with a pin number (MSISDN) to validate if it matches with one of the gererated pins of the given phone number (MSISDN).
+* **PUT**: http://localhost:8080/pin-manager/pin/validate
+```bash
+{
+    "MSISDN":"+34999112233",
+    "PIN": "1234"
+}
 ```
