@@ -8,23 +8,19 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    logging:
-      options:
-        max-size: 10m
-        max-file: "3"
     expose:
       - 5432
     ports:
       - 5432:5432
     volumes:
-      -  postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
   pin-manager:
     container_name: pin-manager-app
     network_mode: bridge
     image: pin-manager
     build:
-      context: .
+      context: ./
       dockerfile: Dockerfile
     expose:
       - 5432
