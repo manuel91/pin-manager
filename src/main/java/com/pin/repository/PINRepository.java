@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface PINRepository extends CrudRepository<PIN, Long> {
 
-    List<PIN> findByCreationDateTimeLessThanEqualAndDiscardedFalse(LocalDateTime currentDateTime);
+    List<PIN> findByCreationDateTimeLessThanEqualAndDiscardedFalse(LocalDateTime dateTime);
 
 }
