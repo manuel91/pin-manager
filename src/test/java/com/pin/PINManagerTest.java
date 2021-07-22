@@ -15,11 +15,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class PINManagerTest extends BaseUnitTest {
 
@@ -95,6 +99,24 @@ public class PINManagerTest extends BaseUnitTest {
                 Assert.assertTrue(isValid);
             }
         }
+    }
+
+    @Test
+    public void cleanExpiredPINListTest() {
+        // Create mock result for MSISDN
+        MSISDN msisdn = PINManagerTestUtils.getMSISDNSample();
+
+        // Create mock result for PIN and store it into MSISDN
+        PIN pin = PINManagerTestUtils.getPINSample(msisdn);
+        pin.setCreationDateTime(pin.getCreationDateTime().minusHours(1));
+        msisdn.setPinList(Arrays.asList(pin));
+
+        // Set Mock result for MSISDN query
+        Mockito.when(pinRepository.findByCreationDateTimeLessThanEqualAndDiscardedFalse(ArgumentMatchers.any(LocalDateTime.class))).thenReturn(msisdn.getPinList());
+
+        // Verify execution of delete method
+        pinManagerService.cleanExpiredPINList();
+        verify(pinRepository, times(1)).deleteAll(msisdn.getPinList());
     }
 
 }
