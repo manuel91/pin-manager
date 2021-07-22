@@ -87,4 +87,16 @@ public class PINController {
         }
     }
 
+    @DeleteMapping(path = "/pin/expired")
+    public ResponseEntity<List<PINResponse>> cleanExpiredPINList() {
+        try {
+            pinManagerService.cleanExpiredPINList();
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        catch(Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

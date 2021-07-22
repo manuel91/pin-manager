@@ -23,7 +23,7 @@ public class MSISDN {
     @OneToMany(
             mappedBy = "msisdn",
             cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER
+            fetch = FetchType.LAZY
     )
     private List<PIN> pinList;
 
