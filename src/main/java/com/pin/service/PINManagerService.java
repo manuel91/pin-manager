@@ -8,6 +8,7 @@ import com.pin.model.PIN;
 import com.pin.repository.MSISDNRepository;
 import com.pin.repository.PINRepository;
 import com.pin.utils.PINManagerUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class PINManagerService {
 
@@ -128,8 +130,9 @@ public class PINManagerService {
 
     @Scheduled(cron = "${com.pin.service.cron.clean.pins}")
     public void cleanExpiredPINList() {
-        List<PIN> expiredPINList = pinRepository.findByCreationDateTimeGreaterThanEqualAndDiscardedFalse(LocalDateTime.now());
+        List<PIN> expiredPINList = pinRepository.findByCreationDateTimeLessThanEqualAndDiscardedFalse(LocalDateTime.now().minusHours(1));
         if (!expiredPINList.isEmpty()) {
+            log.info(String.format("pin-service: Removing a total of %d of unvalidated PINs 1 hour past creation...", expiredPINList.size()));
             pinRepository.deleteAll(expiredPINList);
         }
     }
