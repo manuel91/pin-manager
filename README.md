@@ -51,7 +51,7 @@ $ docker-compose down
 **Create PIN for MSISDN**
 
 This endpoint will receive a phone number (MSISDN) in order to generate and retrieve a random 4-digit PIN to then be stored into database.
-* **PUT**: http://localhost:8080/pin-manager/pin/create
+* **PUT**: http://localhost:8080/pin-service/pin/create
 ```bash
 {
     "MSISDN":"+34999112233",
@@ -61,7 +61,7 @@ This endpoint will receive a phone number (MSISDN) in order to generate and retr
 **Validate PIN**
 
 This endpoint will receive a phone number along with a pin number (MSISDN) to validate if it matches with one of the gererated pins of the given phone number (MSISDN).
-* **PUT**: http://localhost:8080/pin-manager/pin/validate
+* **PUT**: http://localhost:8080/pin-service/pin/validate
 ```bash
 {
     "MSISDN":"+34999112233",
@@ -72,7 +72,7 @@ This endpoint will receive a phone number along with a pin number (MSISDN) to va
 **Get PIN list for MSISDN**
 
 This endpoint will fetch and retrieve all PINs associated to a phone number (MSISDN).
-* **GET**: http://localhost:8080/pin-manager/msisdn/pins
+* **GET**: http://localhost:8080/pin-service/msisdn/pins
 ```bash
 {
     "MSISDN":"+34999112233"
@@ -81,8 +81,8 @@ This endpoint will fetch and retrieve all PINs associated to a phone number (MSI
 
 **Get all MSISDN with PIN list**
 This endpoint will fetch and retrieve all MSISDN created with their respective associated PINs.
-* **GET**: http://localhost:8080/pin-manager/msisdn/all
+* **GET**: http://localhost:8080/pin-service/msisdn/all
 
 **Clean expired PINs**
 An alternative method that manually calls the CRON function to delete expired PINs after 1 hour of their creation-
-* **DELETE**: http://localhost:8080/pin-manager/pin/expired
+* **DELETE**: http://localhost:8080/pin-service/pin/expired
