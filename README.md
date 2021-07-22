@@ -22,3 +22,20 @@ Bonus
 
 
 *The provided solution should be published and accessible on a GIT repository and accessible. It should contain clear instructions on how to run it.*
+
+## Setup and Execution
+
+In order to compile and run this service by console, the commands to be executed on the project's folder are:
+
+* Clean and Install the project by using Maven:
+```bash
+$ mvn clean install
+```
+* Run the service with docker by executing the command:
+```bash
+$ docker-compose up --build
+```
+* In order to shutdown docker-compose execution, use the following command:
+```bash
+$ docker-compose down
+```
