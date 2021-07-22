@@ -132,7 +132,7 @@ public class PINManagerService {
     public void cleanExpiredPINList() {
         List<PIN> expiredPINList = pinRepository.findByCreationDateTimeLessThanEqualAndDiscardedFalse(LocalDateTime.now().minusHours(1));
         if (!expiredPINList.isEmpty()) {
-            log.info(String.format("pin-service: Removing a total of %d of unvalidated PINs 1 hour past creation...", expiredPINList.size()));
+            log.info(String.format("pin-service: Removing a total of %d unvalidated PINs 1 hour past creation...", expiredPINList.size()));
             pinRepository.deleteAll(expiredPINList);
         }
     }
