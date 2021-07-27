@@ -80,9 +80,11 @@ This endpoint will fetch and retrieve all PINs associated to a phone number (MSI
 ```
 
 **Get all MSISDN with PIN list**
+
 This endpoint will fetch and retrieve all MSISDN created with their respective associated PINs.
 * **GET**: http://localhost:8080/pin-service/msisdn/all
 
 **Clean expired PINs**
+
 An alternative method that manually calls the CRON function to delete expired PINs after 1 hour of their creation-
 * **DELETE**: http://localhost:8080/pin-service/pin/expired
